@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 # Diretório de trabalho
 WORKDIR /var/www
 
-# Copiar projeto Laravel
+# Copiar arquivos do projeto
 COPY . .
 
 # Instalar Composer
@@ -20,13 +20,13 @@ RUN curl -sS https://getcomposer.org/installer | php && \
     mv composer.phar /usr/local/bin/composer
 
 # Instalar dependências Laravel
-RUN composer install || true
+RUN composer install --no-dev
 
-# Tentar gerar chave (ignorar erro se já existir .env ou APP_KEY)
+# Gerar chave (ignora erro se já existir)
 RUN php artisan key:generate || true
 
-# Expor porta do Laravel
+# Expor porta usada pelo artisan serve
 EXPOSE 8000
 
-# Entrar no shell interativo para debugging
-CMD ["php", "-S", "0.0.0.0:8000", "-t", "public"]
+# Comando que mantém o servidor Laravel rodando corretamente
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
