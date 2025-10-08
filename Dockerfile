@@ -1,4 +1,4 @@
-# Imagem base do PHP com extensões necessárias
+# Imagem base com PHP e extensões necessárias
 FROM php:8.1-cli
 
 # Instalar dependências do sistema
@@ -9,10 +9,11 @@ RUN apt-get update && apt-get install -y \
     zip \
     && docker-php-ext-install zip pdo pdo_mysql
 
-# Copiar o projeto Laravel para dentro do container
-COPY . /var/www
-
+# Definir diretório de trabalho
 WORKDIR /var/www
+
+# Copiar os arquivos do projeto
+COPY . .
 
 # Instalar o Composer
 RUN curl -sS https://getcomposer.org/installer | php && \
@@ -21,11 +22,11 @@ RUN curl -sS https://getcomposer.org/installer | php && \
 # Instalar dependências do Laravel
 RUN composer install --no-dev
 
-# Gerar chave da aplicação
-RUN php artisan key:generate
+# Gerar chave do app (caso ainda não exista)
+RUN php artisan key:generate || true
 
-# Expor a porta padrão do Laravel
+# Expor a porta do Laravel
 EXPOSE 8000
 
-# Comando para iniciar o servidor Laravel
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Rodar o servidor e manter ativo
+CMD ["sh", "-c", "php artisan serve --host=0.0.0.0 --port=8000"]
