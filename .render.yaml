@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: contabilidade360
+    env: php
+    region: oregon
+    plan: free
+    buildCommand: "composer install --no-dev && php artisan key:generate"
+    startCommand: "php artisan serve --host 0.0.0.0 --port 10000"
+    autoDeploy: true
